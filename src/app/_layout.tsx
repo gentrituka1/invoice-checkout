@@ -16,7 +16,7 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: colors.background },
         }}
       >
-        <Stack.Screen name="index" options={{ title: 'Invoices' }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="invoice/[id]" options={{ title: 'Invoice' }} />
         <Stack.Screen name="checkout/[id]" options={{ title: 'Checkout' }} />
       </Stack>

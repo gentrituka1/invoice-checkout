@@ -1,41 +1,41 @@
-import { Link, Stack, useLocalSearchParams } from 'expo-router';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { EmptyState } from '@/components/EmptyState';
 import { LineItemRow } from '@/components/LineItemRow';
+import { PrimaryButton } from '@/components/PrimaryButton';
 import { Screen } from '@/components/Screen';
 import { StatusBadge } from '@/components/StatusBadge';
-import { getInvoiceById, getInvoiceTotal } from '@/data/mockInvoices';
+import { getInvoiceById } from '@/data/mockInvoices';
 import { colors } from '@/theme/colors';
-import type { InvoiceStatus } from '@/types/invoice';
+import type { Invoice } from '@/types/invoice';
 import { formatCurrency, formatDate } from '@/utils/format';
-
-function canCheckout(status: InvoiceStatus): boolean {
-  return status === 'pending' || status === 'overdue';
-}
+import { canCheckout, getInvoiceTotal } from '@/utils/invoice';
 
 export default function InvoiceDetailScreen() {
+  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const invoice = id ? getInvoiceById(id) : undefined;
+  const [invoice, setInvoice] = useState<Invoice | undefined>(() =>
+    id ? getInvoiceById(id) : undefined,
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      setInvoice(id ? getInvoiceById(id) : undefined);
+    }, [id]),
+  );
 
   if (!invoice) {
     return (
       <Screen>
         <Stack.Screen options={{ title: 'Invoice' }} />
-        <View style={styles.missing}>
-          <Text style={styles.title}>Invoice not found</Text>
-          <Text style={styles.subtitle}>
-            No invoice matches id <Text style={styles.mono}>{id}</Text>.
-          </Text>
-          <Link href="/" style={styles.backLink}>
-            Back to invoices
-          </Link>
-        </View>
+        <EmptyState
+          title="Invoice not found"
+          message={`No invoice matches id ${id ?? 'unknown'}.`}
+          actionLabel="Back to invoices"
+          actionHref="/"
+        />
       </Screen>
     );
   }
@@ -100,16 +100,11 @@ export default function InvoiceDetailScreen() {
         ) : null}
 
         {showCheckout ? (
-          <Link href={`/checkout/${invoice.id}`} asChild>
-            <Pressable
-              style={({ pressed }) => [
-                styles.cta,
-                pressed && styles.ctaPressed,
-              ]}
-            >
-              <Text style={styles.ctaText}>Continue to checkout</Text>
-            </Pressable>
-          </Link>
+          <PrimaryButton
+            label="Continue to checkout"
+            style={styles.cta}
+            onPress={() => router.push(`/checkout/${invoice.id}`)}
+          />
         ) : (
           <View style={styles.notice}>
             <Text style={styles.noticeText}>
@@ -128,9 +123,6 @@ const styles = StyleSheet.create({
   scroll: {
     paddingBottom: 32,
     gap: 16,
-  },
-  missing: {
-    gap: 12,
   },
   header: {
     gap: 6,
@@ -154,26 +146,6 @@ const styles = StyleSheet.create({
   email: {
     fontSize: 14,
     color: colors.textMuted,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: colors.textMuted,
-  },
-  mono: {
-    fontFamily: 'Courier',
-    color: colors.text,
-  },
-  backLink: {
-    marginTop: 4,
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.accent,
   },
   card: {
     backgroundColor: colors.surface,
@@ -229,18 +201,6 @@ const styles = StyleSheet.create({
   },
   cta: {
     marginTop: 8,
-    backgroundColor: colors.accent,
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  ctaPressed: {
-    opacity: 0.9,
-  },
-  ctaText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
   },
   notice: {
     marginTop: 8,

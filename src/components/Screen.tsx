@@ -1,16 +1,23 @@
 import { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  type Edge,
+} from 'react-native-safe-area-context';
 
 import { colors } from '@/theme/colors';
 
 type ScreenProps = {
   children: ReactNode;
+  edges?: Edge[];
 };
 
-export function Screen({ children }: ScreenProps) {
+export function Screen({
+  children,
+  edges = ['bottom', 'left', 'right'],
+}: ScreenProps) {
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.safe} edges={edges}>
       <View style={styles.container}>{children}</View>
     </SafeAreaView>
   );

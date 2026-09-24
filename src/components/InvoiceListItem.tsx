@@ -2,10 +2,10 @@ import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { StatusBadge } from '@/components/StatusBadge';
-import { getInvoiceTotal } from '@/data/mockInvoices';
 import { colors } from '@/theme/colors';
 import type { Invoice } from '@/types/invoice';
 import { formatCurrency, formatDate } from '@/utils/format';
+import { getInvoiceTotal } from '@/utils/invoice';
 
 type InvoiceListItemProps = {
   invoice: Invoice;
