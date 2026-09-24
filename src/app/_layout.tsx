@@ -1,11 +1,12 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
+import { CartProvider } from '@/context/CartContext';
 import { colors } from '@/theme/colors';
 
 export default function RootLayout() {
   return (
-    <>
+    <CartProvider>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
@@ -16,10 +17,19 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: colors.background },
         }}
       >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="invoice/[id]" options={{ title: 'Invoice' }} />
-        <Stack.Screen name="checkout/[id]" options={{ title: 'Checkout' }} />
+        <Stack.Screen
+          name="index"
+          options={{ headerShown: false, title: 'Shop' }}
+        />
+        <Stack.Screen
+          name="cart"
+          options={{ title: 'Cart', headerBackTitle: 'Shop' }}
+        />
+        <Stack.Screen
+          name="order"
+          options={{ title: 'Order invoices', headerBackTitle: 'Cart' }}
+        />
       </Stack>
-    </>
+    </CartProvider>
   );
 }

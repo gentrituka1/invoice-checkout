@@ -2,40 +2,41 @@ import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { colors } from '@/theme/colors';
 
-export type InvoiceFilter = 'all' | 'action' | 'paid' | 'draft';
-
-const FILTERS: { id: InvoiceFilter; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'action', label: 'Action needed' },
-  { id: 'paid', label: 'Paid' },
-  { id: 'draft', label: 'Draft' },
-];
-
-type FilterChipsProps = {
-  value: InvoiceFilter;
-  onChange: (value: InvoiceFilter) => void;
+export type ChipOption<T extends string> = {
+  id: T;
+  label: string;
 };
 
-export function FilterChips({ value, onChange }: FilterChipsProps) {
+type FilterChipsProps<T extends string> = {
+  options: ChipOption<T>[];
+  value: T;
+  onChange: (value: T) => void;
+};
+
+export function FilterChips<T extends string>({
+  options,
+  value,
+  onChange,
+}: FilterChipsProps<T>) {
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.row}
     >
-      {FILTERS.map((filter) => {
-        const selected = value === filter.id;
+      {options.map((option) => {
+        const selected = value === option.id;
 
         return (
           <Pressable
-            key={filter.id}
+            key={option.id}
             accessibilityRole="button"
             accessibilityState={{ selected }}
-            onPress={() => onChange(filter.id)}
+            onPress={() => onChange(option.id)}
             style={[styles.chip, selected && styles.chipSelected]}
           >
             <Text style={[styles.label, selected && styles.labelSelected]}>
-              {filter.label}
+              {option.label}
             </Text>
           </Pressable>
         );
