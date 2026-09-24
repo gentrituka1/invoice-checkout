@@ -1,28 +1,42 @@
-import { Link } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { InvoiceListItem } from '@/components/InvoiceListItem';
 import { Screen } from '@/components/Screen';
+import { getInvoices } from '@/data/mockInvoices';
 import { colors } from '@/theme/colors';
 
 export default function InvoicesScreen() {
+  const invoices = getInvoices();
+
   return (
     <Screen>
-      <View style={styles.content}>
-        <Text style={styles.title}>Invoices</Text>
-        <Text style={styles.subtitle}>
-          Invoice list will live here in the next push.
-        </Text>
-        <Link href="/invoice/demo" style={styles.link}>
-          Open sample invoice
-        </Link>
-      </View>
+      <FlatList
+        data={invoices}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <InvoiceListItem invoice={item} />}
+        contentContainerStyle={styles.list}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Text style={styles.title}>Invoices</Text>
+            <Text style={styles.subtitle}>
+              {invoices.length} invoices ready for review
+            </Text>
+          </View>
+        }
+        showsVerticalScrollIndicator={false}
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    gap: 12,
+  list: {
+    paddingBottom: 24,
+  },
+  header: {
+    gap: 6,
+    marginBottom: 16,
   },
   title: {
     fontSize: 28,
@@ -30,14 +44,10 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   subtitle: {
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: 15,
     color: colors.textMuted,
   },
-  link: {
-    marginTop: 8,
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.accent,
+  separator: {
+    height: 12,
   },
 });
